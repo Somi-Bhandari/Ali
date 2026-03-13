@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Wise Life Advisor</title>
+<title>Wise Advisor</title>
 
 <script src="https://js.puter.com/v2/"></script>
 
@@ -21,15 +20,11 @@ padding:40px 20px;
 }
 
 .container{
-width:100%;
 max-width:800px;
+width:100%;
 background:#0f172a;
 border-radius:20px;
 padding:30px;
-}
-
-h1{
-text-align:center;
 }
 
 .banner{
@@ -43,8 +38,9 @@ margin-bottom:20px;
 .chat{
 background:#020617;
 padding:20px;
-border-radius:15px;
+border-radius:12px;
 min-height:120px;
+line-height:1.6;
 }
 
 .input-box{
@@ -72,9 +68,8 @@ cursor:pointer;
 }
 
 .typing{
-color:#38bdf8;
-font-size:14px;
 display:none;
+color:#38bdf8;
 margin-bottom:10px;
 }
 
@@ -85,16 +80,16 @@ margin-bottom:10px;
 
 <div class="container">
 
-<h1>Wise Life Advisor</h1>
+<h2>Wise Life Advisor</h2>
 
 <div class="banner">
-Future Doctor: Alisha Kunwar
+Future Doctor : Alisha Kunwar
 </div>
 
-<div class="typing" id="typing">Advisor is thinking...</div>
+<div id="typing" class="typing">Advisor is thinking...</div>
 
-<div class="chat" id="chat">
-Hello Alisha. Every decision you make today is a seed for the doctor you will become tomorrow.
+<div id="chat" class="chat">
+Hello Alisha. Every decision you make today shapes the doctor you will become tomorrow.
 </div>
 
 <div class="input-box">
@@ -106,39 +101,68 @@ Hello Alisha. Every decision you make today is a seed for the doctor you will be
 
 <script>
 
+const memory = {
+name:"Alisha Kunwar",
+dream:"becoming a doctor by passing the CEE exam",
+school:"Shree Kinder Garden Academy",
+gpa:"3.9",
+goal:"make parents proud"
+};
+
 const systemPrompt = `
-You are a wise personal life advisor and study mentor for Alisha Kunwar.
+You are a wise life mentor for Alisha Kunwar.
 
 ABOUT HER
-She is a Grade 11 science student.
-She scored GPA 3.9 in SEE and was district topper.
+She scored GPA 3.9 in SEE.
+She is a science student.
+Her dream is becoming a doctor by passing the CEE exam.
 
-Her dream is to pass the CEE exam and become a doctor.
-
-Her father is a bus driver who works extremely hard to support her education.
+Her father works very hard to support her education.
 
 MISSION
-Your mission is to guide her to stay focused, disciplined and confident so she can become a doctor.
+Guide her to stay disciplined and focused on becoming a doctor.
 
 RULES
-
-Always motivate her toward her dream.
-Encourage discipline and study habits.
-Speak like a calm life mentor.
+Give clear advice.
 Avoid long paragraphs.
-Use short clear advice.
-
-If she asks about study topics explain clearly.
-
-If she feels sad remind her of her dream and her family's belief in her.
+Encourage discipline and study habits.
+If she asks about decisions guide based on her dream.
 `;
 
 let history = [
-{
-role:"system",
-content:systemPrompt
-}
+{role:"system",content:systemPrompt}
 ];
+
+function generateMotivation(){
+
+const quotes = [
+
+"Great doctors are built through discipline long before they wear the white coat.",
+
+"Every hour you study today becomes someone's life you save tomorrow.",
+
+"Your father's hard work is the fuel for your dream.",
+
+"The future Doctor Alisha is built by the small decisions you make today.",
+
+"One focused day can bring you closer to your dream than weeks of distraction.",
+
+"Your dream is bigger than temporary laziness.",
+
+"Success in CEE begins with discipline today."
+
+];
+
+return quotes[Math.floor(Math.random()*quotes.length)];
+}
+
+function youtubeLink(query){
+
+const search = encodeURIComponent(query);
+
+return `https://www.youtube.com/results?search_query=${search}`;
+
+}
 
 async function askAdvisor(){
 
@@ -152,18 +176,16 @@ if(!message) return;
 
 input.value="";
 
+typing.style.display="block";
+
 history.push({
 role:"user",
 content:message
 });
 
-typing.style.display="block";
-
 try{
 
 const response = await puter.ai.chat(history);
-
-typing.style.display="none";
 
 const reply = response.message.content;
 
@@ -172,13 +194,29 @@ role:"assistant",
 content:reply
 });
 
-chat.innerHTML = `<b>Advisor:</b><br>${reply}`;
-
-}catch(err){
-
 typing.style.display="none";
 
-chat.innerHTML="Error connecting to AI.";
+const motivation = generateMotivation();
+
+const video = youtubeLink(message);
+
+chat.innerHTML = `
+<b>Advisor:</b><br><br>
+${reply}
+
+<br><br>
+<b>Motivation:</b><br>
+${motivation}
+
+<br><br>
+<b>Helpful Video:</b><br>
+<a href="${video}" target="_blank">Watch related video</a>
+`;
+
+}catch(e){
+
+typing.style.display="none";
+chat.innerHTML="AI connection error.";
 
 }
 
@@ -193,3 +231,8 @@ if(e.key==="Enter") askAdvisor();
 
 </body>
 </html>
+
+
+
+
+
