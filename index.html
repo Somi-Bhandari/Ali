@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wise Advisor — Future Doctor Alisha</title>
+
+<script src="https://js.puter.com/v2/"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+height:100vh;
+}
+
+.app{
+width:100%;
+max-width:900px;
+display:flex;
+flex-direction:column;
+}
+
+.header{
+background:#020617;
+padding:18px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.chat{
+flex:1;
+overflow-y:auto;
+padding:20px;
+}
+
+.message{
+margin-bottom:18px;
+}
+
+.user{
+text-align:right;
+}
+
+.assistant{
+background:#020617;
+padding:15px;
+border-radius:10px;
+width:100%;
+box-sizing:border-box;
+}
+
+.controls{
+margin-top:8px;
+font-size:18px;
+cursor:pointer;
+}
+
+.controls span{
+margin-right:10px;
+}
+
+.typing{
+opacity:0.7;
+font-style:italic;
+}
+
+.input-box{
+display:flex;
+padding:12px;
+background:#020617;
+}
+
+input{
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#1e293b;
+color:white;
+}
+
+button{
+margin-left:10px;
+padding:12px 18px;
+border:none;
+border-radius:8px;
+background:#0ea5e9;
+color:white;
+cursor:pointer;
+}
+
+.video{
+margin-top:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+Wise Advisor — Future Doctor Alisha
+</div>
+
+<div id="chat" class="chat"></div>
+
+<div class="input-box">
+<input id="input" placeholder="Ask anything Alisha...">
+<button onclick="send()">Send</button>
+</div>
+
+</div>
+
+<script>
+
+const YOUTUBE_API="AIzaSyD3_pVIFtixs4fL72n0QNpSSu-x-Q1ce9o";
+
+const motivations=[
+"Your future patients are waiting for the doctor you will become.",
+"Hard study today saves lives tomorrow.",
+"Doctors are made by discipline, not motivation.",
+"Every chapter you study brings you closer to the white coat.",
+"The pain of study is temporary but saving lives is forever.",
+"Your dream of becoming a doctor deserves your best effort today.",
+"Consistency beats talent in medical success.",
+"Future Dr. Alisha is built by today's discipline."
+];
+
+function getMotivation(){
+
+let day=new Date().getDate();
+
+return motivations[day % motivations.length];
+
+}
+
+let history=[
+{
+role:"system",
+content:`
+You are a wise life advisor for Alisha.
+
+Her dream is becoming a doctor.
+
+Guide her with motivation, study advice and emotional support.
+
+Keep answers clear and helpful.
+`
+}
+];
+
+function addUser(text){
+
+const chat=document.getElementById("chat");
+
+const div=document.createElement("div");
+
+div.className="message user";
+
+div.innerHTML=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+function addAssistant(text){
+
+const chat=document.getElementById("chat");
+
+const div=document.createElement("div");
+
+div.className="message";
+
+div.innerHTML=
+`
+<div class="assistant">
+
+${text}
+
+<div class="controls">
+
+<span onclick="copyText(this)">📋</span>
+<span onclick="speakText(this)">🔊</span>
+
+</div>
+
+</div>
+`;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+function showTyping(){
+
+const chat=document.getElementById("chat");
+
+const div=document.createElement("div");
+
+div.id="typing";
+
+div.className="assistant typing";
+
+div.innerHTML="Typing to Alisha...";
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+function removeTyping(){
+
+const typing=document.getElementById("typing");
+
+if(typing) typing.remove();
+
+}
+
+function copyText(el){
+
+const text=el.parentElement.parentElement.innerText;
+
+navigator.clipboard.writeText(text);
+
+}
+
+function speakText(el){
+
+const text=el.parentElement.parentElement.innerText;
+
+const speech=new SpeechSynthesisUtterance(text);
+
+speech.lang="auto";
+
+speechSynthesis.speak(speech);
+
+}
+
+async function searchYouTube(query){
+
+try{
+
+const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${YOUTUBE_API}&maxResults=1&type=video`;
+
+const res=await fetch(url);
+
+const data=await res.json();
+
+const id=data.items[0].id.videoId;
+
+return `
+<div class="video">
+<iframe width="100%" height="260"
+src="https://www.youtube.com/embed/${id}"
+frameborder="0"
+allowfullscreen>
+</iframe>
+</div>
+`;
+
+}catch{
+
+return "";
+
+}
+
+}
+
+async function send(){
+
+const input=document.getElementById("input");
+
+const text=input.value.trim();
+
+if(!text) return;
+
+input.value="";
+
+addUser(text);
+
+history.push({role:"user",content:text});
+
+showTyping();
+
+try{
+
+const response=await puter.ai.chat(history);
+
+removeTyping();
+
+const reply=response.message.content;
+
+history.push({role:"assistant",content:reply});
+
+addAssistant(reply);
+
+const video=await searchYouTube(text);
+
+if(video) addAssistant(video);
+
+addAssistant("💡 Motivation: "+getMotivation());
+
+}catch(e){
+
+removeTyping();
+
+addAssistant("Error connecting AI.");
+
+}
+
+}
+
+document.getElementById("input").addEventListener("keypress",function(e){
+
+if(e.key==="Enter") send();
+
+});
+
+</script>
+
+</body>
+</html>
