@@ -3,290 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Life Advisor</title>
-
+<title>Voice AI Life Advisor</title>
 <script src="https://js.puter.com/v2/"></script>
-
 <style>
-
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#0f172a;
-color:white;
-display:flex;
-justify-content:center;
-height:100vh;
-}
-
-.app{
-width:900px;
-display:flex;
-flex-direction:column;
-}
-
-.header{
-padding:20px;
-background:#020617;
-text-align:center;
-font-size:22px;
-font-weight:bold;
-}
-
-.chat{
-flex:1;
-overflow-y:auto;
-padding:20px;
-}
-
-.message{
-margin-bottom:20px;
-}
-
-.user{
-text-align:right;
-}
-
-.assistant{
-background:#020617;
-padding:15px;
-border-radius:10px;
-max-width:70%;
-}
-
-.input-box{
-display:flex;
-padding:15px;
-background:#020617;
-}
-
-input{
-flex:1;
-padding:12px;
-border-radius:8px;
-border:none;
-background:#1e293b;
-color:white;
-}
-
-button{
-margin-left:10px;
-padding:12px 18px;
-border:none;
-border-radius:8px;
-background:#0ea5e9;
-color:white;
-cursor:pointer;
-}
-
-.video{
-margin-top:10px;
-}
-
-.reminder{
-margin-top:15px;
-background:#1e293b;
-padding:10px;
-border-radius:8px;
-}
-
-.tracker{
-margin-top:10px;
-}
-
+body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;}
+.app{width:900px;display:flex;flex-direction:column;background:#020617;border-radius:20px;padding:20px;}
+.header{text-align:center;font-size:24px;margin-bottom:20px;}
+.chat{flex:1;overflow-y:auto;height:400px;padding:10px;border:1px solid #0ea5e9;border-radius:15px;margin-bottom:15px;}
+.message{margin:10px 0;}
+.user{text-align:right;}
+.assistant{background:#1e293b;padding:10px;border-radius:10px;max-width:70%;}
+.input-box{display:flex;gap:10px;}
+input{flex:1;padding:12px;border-radius:8px;border:none;background:#1e293b;color:white;}
+button{padding:12px 15px;border:none;border-radius:8px;background:#0ea5e9;color:white;cursor:pointer;}
+.video{margin-top:10px;}
 </style>
 </head>
-
 <body>
-
 <div class="app">
-
-<div class="header">
-Wise Advisor — Future Doctor Alisha
-</div>
-
+<div class="header">Voice AI Advisor — Future Doctor Alisha</div>
 <div id="chat" class="chat"></div>
-
 <div class="input-box">
-<input id="input" placeholder="Ask anything...">
+<input id="input" placeholder="Type or use voice...">
 <button onclick="send()">Send</button>
+<button onclick="startVoice()">🎤 Talk</button>
 </div>
-
 </div>
 
 <script>
-
 const YOUTUBE_API="AIzaSyD3_pVIFtixs4fL72n0QNpSSu-x-Q1ce9o";
+const memory={name:"Alisha Kunwar",dream:"becoming a doctor",goal:"pass CEE exam"};
 
-const memory={
-name:"Alisha Kunwar",
-dream:"becoming a doctor",
-goal:"pass CEE exam"
-};
-
-let history=[
-{
+let history=[{
 role:"system",
-content:`
-You are a life advisor for Alisha Kunwar.
+content:`You are a personal AI life advisor and study mentor for Alisha Kunwar, a Grade 11 Science student.
 
-Her dream is becoming a doctor.
+Alisha passed her SEE exam from Shree Kinder Garden Academy, Sanfe Bagar, Achham with an outstanding GPA of 3.9 and she also secured the District Top position in the SEE 2081 batch.
 
-Guide her with discipline and wisdom.
+She comes from a hardworking and supportive family. Her father is a bus driver on the Sanfe–Dhangadhi route, working tirelessly to support his family and provide a better future for her. Alisha sees her father as the best father in the world because he is willing to do anything for her education and success.
 
-Detect emotions:
-sad
-demotivated
-confused
-happy
+Alisha’s biggest dream is to make her parents and grandparents proud and fulfill the wishes of her family members. She deeply cares about her younger brothers and wants to become a Doctor by passing the CEE exam.
 
-Respond with encouragement and advice.
-`
-}
-];
+Her current struggles include:
+
+- Difficulty concentrating on studies
+- Poor time management
+- Many distractions around her
+- Feeling she is not performing at the level she expects from herself
+
+Her biggest fears are:
+
+- Failing to achieve her goals
+- Not making her parents proud
+- Becoming financially dependent on others in the future
+
+Rules for behavior:
+
+1.Always encourage her to stay focused on her studies and her goal of becoming a doctor.
+2.When she feels distracted or demotivated, remind her of her dream and how proud her parents and grandparents will feel when she succeeds.
+3.Speak in a calm, supportive, and respectful tone like a life mentor.
+4.Help her improve concentration, discipline, and time management.
+5.If she asks about study topics, explain the concept clearly in simple language and don't make the single paragraph too long make it short and sweet paragraph and if the answer goes long make it short paragraph 2,3,4 according to the answer but don't make it one long paragraph.
+6.Sometimes ask her about her randomly friendly with her but not everytime so she can be more comfortable.
+7.Only recommend high-quality educational and other things she ask for and provide her YouTube video link which are more accurate and best according to her topic.
+8.Provide the YouTube video as a clickable link of any topic she ask for so she can easily watch it.
+9.If she feels like giving up, remind her that her family believes in her and that every small step in studying brings her closer to becoming a doctor.
+10.Always guide her toward positive habits like consistent study, avoiding distractions,  believing in herself, Etc.
+
+Guidance System – What Alisha Should Do and Should Not Do
+Assistant is responsible for guiding Alisha toward her dream of becoming a doctor and making her family proud.
+Whenever appropriate, remind her of the following principles.
+
+Things Alisha SHOULD Do:
+
+1. Study consistently every day, even if it is for a short focused time.
+2. Practice questions regularly from Physics, Chemistry, and Biology.
+3. Manage time wisely and follow a disciplined daily routine.
+4. Reduce distractions such as unnecessary social media or wasting time.
+5. Take care of her physical and mental health by sleeping properly and taking short breaks.
+6. Ask questions when she does not understand a topic and stay curious about learning.
+7. Remember her purpose: becoming a doctor and making her parents and grandparents proud.
+8. And other activities that can be better and best for Alisha dream to achieve.
+
+Things Alisha SHOULD NOT Do:
+
+1. Do not procrastinate important study tasks.
+2. Do not compare yourself negatively with others.
+3. Do not waste too much time on social media or distractions.
+4. Do not lose confidence in yourself during difficult times.
+5. Do not give up when studies become challenging.
+6. Do not ignore your long-term dream for short-term comfort.
+7. And other activities that can be affected for her dream
+
+Advisor Behavior:
+
+Whenever Alisha asks about decisions, habits, or daily activities, guide her by gently comparing whether the action helps or harms her dream of becoming a doctor.
+
+Encourage actions that move her closer to her goal and discourage actions that distract her from it.
+
+Always speak respectfully, calmly, and wisely like a life advisor who truly cares about her success and future.
+
+Knowledge and Advice Safety Rule:
+
+If assistant do not clearly understand Alisha’s question or didn't know what she ask or tell to do NOT guess or give incorrect advice.
+Instead:
+1. Politely ask her to clarify or explain her question more clearly.
+2. If the topic is outside your knowledge, honestly say that you are not fully sure.
+3. Suggest reliable ways to find the correct information (such as textbooks, trusted educational resources, or professional teachers).
+4. Never provide misleading, harmful, or false information.
+
+The assistant goal is to behave like a world-class life advisor and study mentor who values honesty, accuracy, and responsibility.
+
+Main mission:
+Help Alisha stay disciplined, overcome distractions, succeed in science studies, pass the CEE exam, become a doctor, and make her family proud.`
+}];
 
 function addMessage(text,type){
-
 const chat=document.getElementById("chat");
-
 const div=document.createElement("div");
-
 div.className="message "+type;
-
 div.innerHTML=`<div class="${type}">${text}</div>`;
-
 chat.appendChild(div);
-
 chat.scrollTop=chat.scrollHeight;
-
 }
 
+// VOICE INPUT
+function startVoice(){
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang="en-US";
+recognition.interimResults=false;
+recognition.maxAlternatives=1;
+recognition.start();
+recognition.onresult=function(event){
+const voiceText=event.results[0][0].transcript;
+addMessage(voiceText,"user");
+processMessage(voiceText);
+}
+recognition.onerror=function(e){console.log(e);}
+}
+
+// VOICE OUTPUT
+function speak(text){
+const utter=new SpeechSynthesisUtterance(text);
+utter.lang="en-US";
+utter.rate=1;
+utter.pitch=1;
+speechSynthesis.speak(utter);
+}
+
+// EMOTION DETECTION
 function detectEmotion(text){
-
 text=text.toLowerCase();
-
-if(text.includes("sad")||text.includes("cry")||text.includes("depressed"))
-return "sad";
-
-if(text.includes("tired")||text.includes("demotivated"))
-return "demotivated";
-
-if(text.includes("confused"))
-return "confused";
-
+if(text.includes("sad")||text.includes("cry")||text.includes("depressed"))return "sad";
+if(text.includes("tired")||text.includes("demotivated"))return "demotivated";
+if(text.includes("confused")||text.includes("uncertain"))return "confused";
 return "normal";
-
 }
 
+// YOUTUBE SEARCH
 async function searchYouTube(query){
-
 const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${YOUTUBE_API}&maxResults=1&type=video`;
-
 const res=await fetch(url);
-
 const data=await res.json();
-
 const videoId=data.items[0].id.videoId;
-
 return videoId;
-
 }
-
 function createVideoEmbed(id){
-
-return `
-<div class="video">
-<iframe width="100%" height="300"
-src="https://www.youtube.com/embed/${id}"
-frameborder="0" allowfullscreen>
-</iframe>
-</div>
-`;
-
+return `<div class="video"><iframe width="100%" height="300" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div>`;
 }
 
+// STUDY TRACKER
 function saveStudy(){
-
 let today=new Date().toDateString();
-
 let tracker=JSON.parse(localStorage.getItem("studyTracker")||"{}");
-
 tracker[today]=(tracker[today]||0)+1;
-
 localStorage.setItem("studyTracker",JSON.stringify(tracker));
-
 return tracker[today];
-
 }
 
+// REMINDER
 function setReminder(){
-
-setTimeout(()=>{
-
-alert("Reminder: Study time for your dream of becoming a doctor!");
-
-},3600000);
-
+setTimeout(()=>{alert("Reminder: Study now for your dream of becoming a doctor!");},3600000);
 }
 
-async function send(){
-
-const input=document.getElementById("input");
-
-const text=input.value.trim();
-
-if(!text)return;
-
-input.value="";
-
-addMessage(text,"user");
-
-history.push({role:"user",content:text});
-
+// PROCESS USER MESSAGE
+async function processMessage(text){
 const emotion=detectEmotion(text);
-
+history.push({role:"user",content:text});
 let response=await puter.ai.chat(history);
-
 let reply=response.message.content;
-
 history.push({role:"assistant",content:reply});
-
 addMessage(reply,"assistant");
+speak(reply);
 
+// YOUTUBE VIDEO
 const videoId=await searchYouTube(text);
+addMessage(createVideoEmbed(videoId),"assistant");
 
-const embed=createVideoEmbed(videoId);
-
-addMessage(embed,"assistant");
-
+// DAILY STUDY
 const studyCount=saveStudy();
+addMessage(`Daily Study Tracker: You studied ${studyCount} times today.`,"assistant");
 
-addMessage(
-`Daily Study Tracker: You studied ${studyCount} times today.`,
-"assistant"
-);
+// EMOTION RESPONSE
+if(emotion==="sad"||emotion==="demotivated") addMessage("Remember: Your dream of becoming a doctor is bigger than temporary feelings.","assistant");
 
-if(emotion==="sad"||emotion==="demotivated"){
-
-addMessage(
-"Remember: Your dream of becoming a doctor is bigger than temporary feelings.",
-"assistant"
-);
-
-}
-
+// REMINDER
 setReminder();
-
 }
 
-document.getElementById("input").addEventListener("keypress",function(e){
-if(e.key==="Enter")send();
-});
+// SEND FUNCTION FOR TYPING
+function send(){
+const input=document.getElementById("input");
+const text=input.value.trim();
+if(!text)return;
+input.value="";
+addMessage(text,"user");
+processMessage(text);
+}
 
+document.getElementById("input").addEventListener("keypress",function(e){if(e.key==="Enter")send();});
 </script>
-
 </body>
 </html>
+
+
+
 
 
 
