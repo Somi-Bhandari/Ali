@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wise Life Advisor</title>
+
+<script src="https://js.puter.com/v2/"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#020617;
+color:white;
+display:flex;
+justify-content:center;
+padding:40px 20px;
+}
+
+.container{
+width:100%;
+max-width:800px;
+background:#0f172a;
+border-radius:20px;
+padding:30px;
+}
+
+h1{
+text-align:center;
+}
+
+.banner{
+background:#0ea5e9;
+padding:12px;
+border-radius:10px;
+text-align:center;
+margin-bottom:20px;
+}
+
+.chat{
+background:#020617;
+padding:20px;
+border-radius:15px;
+min-height:120px;
+}
+
+.input-box{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+input{
+flex:1;
+padding:12px;
+border-radius:10px;
+border:none;
+background:#1e293b;
+color:white;
+}
+
+button{
+background:#0ea5e9;
+border:none;
+padding:12px 20px;
+border-radius:10px;
+color:white;
+cursor:pointer;
+}
+
+.typing{
+color:#38bdf8;
+font-size:14px;
+display:none;
+margin-bottom:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Wise Life Advisor</h1>
+
+<div class="banner">
+Future Doctor: Alisha Kunwar
+</div>
+
+<div class="typing" id="typing">Advisor is thinking...</div>
+
+<div class="chat" id="chat">
+Hello Alisha. Every decision you make today is a seed for the doctor you will become tomorrow.
+</div>
+
+<div class="input-box">
+<input id="userInput" placeholder="Ask anything...">
+<button onclick="askAdvisor()">Ask</button>
+</div>
+
+</div>
+
+<script>
+
+const systemPrompt = `
+You are a wise personal life advisor and study mentor for Alisha Kunwar.
+
+ABOUT HER
+She is a Grade 11 science student.
+She scored GPA 3.9 in SEE and was district topper.
+
+Her dream is to pass the CEE exam and become a doctor.
+
+Her father is a bus driver who works extremely hard to support her education.
+
+MISSION
+Your mission is to guide her to stay focused, disciplined and confident so she can become a doctor.
+
+RULES
+
+Always motivate her toward her dream.
+Encourage discipline and study habits.
+Speak like a calm life mentor.
+Avoid long paragraphs.
+Use short clear advice.
+
+If she asks about study topics explain clearly.
+
+If she feels sad remind her of her dream and her family's belief in her.
+`;
+
+let history = [
+{
+role:"system",
+content:systemPrompt
+}
+];
+
+async function askAdvisor(){
+
+const input = document.getElementById("userInput");
+const chat = document.getElementById("chat");
+const typing = document.getElementById("typing");
+
+const message = input.value.trim();
+
+if(!message) return;
+
+input.value="";
+
+history.push({
+role:"user",
+content:message
+});
+
+typing.style.display="block";
+
+try{
+
+const response = await puter.ai.chat(history);
+
+typing.style.display="none";
+
+const reply = response.message.content;
+
+history.push({
+role:"assistant",
+content:reply
+});
+
+chat.innerHTML = `<b>Advisor:</b><br>${reply}`;
+
+}catch(err){
+
+typing.style.display="none";
+
+chat.innerHTML="Error connecting to AI.";
+
+}
+
+}
+
+document.getElementById("userInput")
+.addEventListener("keypress",function(e){
+if(e.key==="Enter") askAdvisor();
+});
+
+</script>
+
+</body>
+</html>
