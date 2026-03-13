@@ -128,19 +128,28 @@ const YOUTUBE_API="AIzaSyD3_pVIFtixs4fL72n0QNpSSu-x-Q1ce9o";
 const motivations=[
 "Your future patients are waiting for the doctor you will become.",
 "Hard study today saves lives tomorrow.",
-"Doctors are made by discipline, not motivation.",
-"Every chapter you study brings you closer to the white coat.",
-"The pain of study is temporary but saving lives is forever.",
-"Your dream of becoming a doctor deserves your best effort today.",
-"Consistency beats talent in medical success.",
-"Future Dr. Alisha is built by today's discipline."
+"Doctors are built by discipline, not comfort.",
+"The white coat is earned page by page.",
+"Every chapter you finish brings you closer to saving lives.",
+"The pain of studying is temporary but the pride of being a doctor lasts forever.",
+"Consistency today creates a life-saving doctor tomorrow.",
+"The world needs doctors who never gave up."
 ];
 
 function getMotivation(){
 
-let day=new Date().getDate();
+let last=localStorage.getItem("lastMotivation");
 
-return motivations[day % motivations.length];
+let index;
+
+do{
+index=Math.floor(Math.random()*motivations.length);
+}
+while(index==last);
+
+localStorage.setItem("lastMotivation",index);
+
+return motivations[index];
 
 }
 
@@ -148,13 +157,11 @@ let history=[
 {
 role:"system",
 content:`
-You are a wise life advisor for Alisha.
+You are a wise advisor for Alisha.
 
 Her dream is becoming a doctor.
 
-Guide her with motivation, study advice and emotional support.
-
-Keep answers clear and helpful.
+Give helpful answers, emotional guidance and study advice.
 `
 }
 ];
@@ -187,12 +194,12 @@ div.innerHTML=
 `
 <div class="assistant">
 
-${text}
+<div class="responseText">${text}</div>
 
 <div class="controls">
 
-<span onclick="copyText(this)">📋</span>
-<span onclick="speakText(this)">🔊</span>
+<button onclick="copyResponse(this)">📋 Copy</button>
+<button onclick="speakResponse(this)">🔊 Listen</button>
 
 </div>
 
@@ -205,6 +212,36 @@ chat.scrollTop=chat.scrollHeight;
 
 }
 
+function copyResponse(btn){
+
+const text=btn.parentElement.parentElement
+.querySelector(".responseText").innerText;
+
+navigator.clipboard.writeText(text);
+
+btn.innerText="✔ Copied";
+
+setTimeout(()=>btn.innerText="📋 Copy",1500);
+
+}
+
+function speakResponse(btn){
+
+const text=btn.parentElement.parentElement
+.querySelector(".responseText").innerText;
+
+const speech=new SpeechSynthesisUtterance(text);
+
+speech.lang="en-US";
+
+speech.rate=1;
+
+speech.pitch=1;
+
+speechSynthesis.speak(speech);
+
+}
+
 function showTyping(){
 
 const chat=document.getElementById("chat");
@@ -213,9 +250,9 @@ const div=document.createElement("div");
 
 div.id="typing";
 
-div.className="assistant typing";
+div.className="assistant";
 
-div.innerHTML="Typing to Alisha...";
+div.innerHTML="<i>Typing to Alisha...</i>";
 
 chat.appendChild(div);
 
@@ -225,29 +262,9 @@ chat.scrollTop=chat.scrollHeight;
 
 function removeTyping(){
 
-const typing=document.getElementById("typing");
+const t=document.getElementById("typing");
 
-if(typing) typing.remove();
-
-}
-
-function copyText(el){
-
-const text=el.parentElement.parentElement.innerText;
-
-navigator.clipboard.writeText(text);
-
-}
-
-function speakText(el){
-
-const text=el.parentElement.parentElement.innerText;
-
-const speech=new SpeechSynthesisUtterance(text);
-
-speech.lang="auto";
-
-speechSynthesis.speak(speech);
+if(t) t.remove();
 
 }
 
@@ -274,9 +291,7 @@ allowfullscreen>
 `;
 
 }catch{
-
 return "";
-
 }
 
 }
@@ -315,23 +330,23 @@ if(video) addAssistant(video);
 
 addAssistant("💡 Motivation: "+getMotivation());
 
-}catch(e){
+}catch{
 
 removeTyping();
 
-addAssistant("Error connecting AI.");
+addAssistant("AI connection error.");
 
 }
 
 }
 
-document.getElementById("input").addEventListener("keypress",function(e){
-
+document.getElementById("input").addEventListener("keypress",e=>{
 if(e.key==="Enter") send();
-
 });
 
-</script>
-
+  </script>
 </body>
 </html>
+  
+  
+  
